@@ -5,7 +5,7 @@
 ##
 # variables
 
-library= pdf.a
+library= text.a
 
 sources= $(wildcard *.java)
 objects= $(patsubst %.java, %.o, $(sources))

@@ -4,6 +4,13 @@
  *
  * Copyright 1999, 2000, 2001, 2002 Bruno Lowagie
  *
+ * The contents of this file are subject to the Mozilla Public License Version 1.1
+ * (the "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the License.
  *
  * The Original Code is 'iText, a free JAVA-PDF library'.
  *
@@ -16,22 +23,25 @@
  * Contributor(s): all the names of the contributors are added in the source code
  * where applicable.
  *
+ * Alternatively, the contents of this file may be used under the terms of the
+ * LGPL license (the "GNU LIBRARY GENERAL PUBLIC LICENSE"), in which case the
+ * provisions of LGPL are applicable instead of those above.  If you wish to
+ * allow use of your version of this file only under the terms of the LGPL
+ * License and not to allow others to use your version of this file under
+ * the MPL, indicate your decision by deleting the provisions above and
+ * replace them with the notice and other provisions required by the LGPL.
+ * If you do not delete the provisions above, a recipient may use your version
+ * of this file under either the MPL or the GNU LIBRARY GENERAL PUBLIC LICENSE.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- * 
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- * Boston, MA  02110-1301, USA.
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the MPL as stated above or under the terms of the GNU
+ * Library General Public License as published by the Free Software Foundation;
+ * either version 2 of the License, or any later version.
  *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Library general Public License for more
+ * details.
  *
  * If you didn't download this code from the following link, you should check if
  * you aren't using an obsolete version:
@@ -44,10 +54,11 @@ import java.awt.Color;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Font;
-//import com.lowagie.text.Image; ssteward: dropped in 1.44
+import com.lowagie.text.Image;
 import com.lowagie.text.SplitCharacter;
 import java.util.HashMap;
 import java.util.Iterator;
+import com.lowagie.text.ExceptionConverter;
 
 /**
  * A <CODE>PdfChunk</CODE> is the PDF translation of a <CODE>Chunk</CODE>.
@@ -126,7 +137,7 @@ public class PdfChunk implements SplitCharacter{
     protected boolean newlineSplit;
     
 /** The image in this <CODE>PdfChunk</CODE>, if it has one */
-    // protected Image image; ssteward: dropped in 1.44
+    protected Image image;
     
 /** The offset in the x direction for the image */
     protected float offsetX;
@@ -154,11 +165,10 @@ public class PdfChunk implements SplitCharacter{
         this.noStroke = other.noStroke;
         this.baseFont = other.baseFont;
         Object obj[] = (Object[])attributes.get(Chunk.IMAGE);
-        if (obj == null) {
-            // image = null; ssteward: dropped in 1.44 
-	}
+        if (obj == null)
+            image = null;
         else {
-            // image = (Image)obj[0]; ssteward: dropped in 1.44
+            image = (Image)obj[0];
             offsetX = ((Float)obj[1]).floatValue();
             offsetY = ((Float)obj[2]).floatValue();
             changeLeading = ((Boolean)obj[3]).booleanValue();
@@ -235,16 +245,16 @@ public class PdfChunk implements SplitCharacter{
         noStroke.put(Chunk.ENCODING, font.getFont().getEncoding());
         Object obj[] = (Object[])attributes.get(Chunk.IMAGE);
         if (obj == null) {
-            // image = null; ssteward: dropped in 1.44 
+            image = null;
         }
         else {
             attributes.remove(Chunk.HSCALE); // images are scaled in other ways
-            // image = (Image)obj[0]; ssteward: dropped in 1.44
+            image = (Image)obj[0];
             offsetX = ((Float)obj[1]).floatValue();
             offsetY = ((Float)obj[2]).floatValue();
             changeLeading = ((Boolean)obj[3]).booleanValue();
         }
-        // font.setImage(image); ssteward: dropped in 1.44
+        font.setImage(image);
         Float hs = (Float)attributes.get(Chunk.HSCALE);
         if (hs != null)
             font.setHorizontalScaling(hs.floatValue());
@@ -287,7 +297,6 @@ public class PdfChunk implements SplitCharacter{
     
     PdfChunk split(float width) {
         newlineSplit = false;
-	/* ssteward: dropped in 1.44 
         if (image != null) {
             if (image.scaledWidth() > width) {
                 PdfChunk pc = new PdfChunk(Chunk.OBJECT_REPLACEMENT_CHARACTER, this);
@@ -300,7 +309,6 @@ public class PdfChunk implements SplitCharacter{
             else
                 return null;
         }
-	*/
         HyphenationEvent hyphenationEvent = (HyphenationEvent)noStroke.get(Chunk.HYPHENATION);
         int currentPosition = 0;
         int splitPosition = -1;
@@ -417,7 +425,6 @@ public class PdfChunk implements SplitCharacter{
  */
     
     PdfChunk truncate(float width) {
-	/* ssteward: dropped in 1.44
         if (image != null) {
             if (image.scaledWidth() > width) {
                 PdfChunk pc = new PdfChunk("", this);
@@ -430,7 +437,6 @@ public class PdfChunk implements SplitCharacter{
             else
                 return null;
         }
-	*/
         
         int currentPosition = 0;
         float currentWidth = 0;
@@ -525,11 +531,9 @@ public class PdfChunk implements SplitCharacter{
     
     public float getWidthCorrected(float charSpacing, float wordSpacing)
     {
-	/* ssteward: dropped in 1.44
         if (image != null) {
             return image.scaledWidth() + charSpacing;
         }
-	*/
         int numberOfSpaces = 0;
         int idx = -1;
         while ((idx = value.indexOf(' ', idx + 1)) >= 0)
@@ -613,56 +617,51 @@ public class PdfChunk implements SplitCharacter{
  * Checks if there is an image in the <CODE>PdfChunk</CODE>.
  * @return <CODE>true</CODE> if an image is present
  */
-    /* ssteward: dropped in 1.44
+    
     boolean isImage()
     {
         return image != null;
     }
-    */
     
 /**
  * Gets the image in the <CODE>PdfChunk</CODE>.
  * @return the image or <CODE>null</CODE>
  */
-    /* ssteward: dropped in 1.44
+    
     Image getImage()
     {
         return image;
     }
-    */
     
 /**
  * Sets the image offset in the x direction
  * @param  offsetX the image offset in the x direction
  */
-    /* ssteward: dropped in 1.44
+    
     void setImageOffsetX(float offsetX)
     {
         this.offsetX = offsetX;
     }
-    */
     
 /**
  * Gets the image offset in the x direction
  * @return the image offset in the x direction
  */
-    /* ssteward: dropped in 1.44
+    
     float getImageOffsetX()
     {
         return offsetX;
     }
-    */
     
 /**
  * Sets the image offset in the y direction
  * @param  offsetY the image offset in the y direction
  */
-    /* ssteward: dropped in 1.44
+    
     void setImageOffsetY(float offsetY)
     {
         this.offsetY = offsetY;
     }
-    */
     
 /**
  * Gets the image offset in the y direction

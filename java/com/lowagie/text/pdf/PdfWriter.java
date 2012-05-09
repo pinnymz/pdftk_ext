@@ -5,6 +5,13 @@
  *
  * Copyright 1999, 2000, 2001, 2002 Bruno Lowagie
  *
+ * The contents of this file are subject to the Mozilla Public License Version 1.1
+ * (the "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the License.
  *
  * The Original Code is 'iText, a free JAVA-PDF library'.
  *
@@ -17,22 +24,25 @@
  * Contributor(s): all the names of the contributors are added in the source code
  * where applicable.
  *
+ * Alternatively, the contents of this file may be used under the terms of the
+ * LGPL license (the "GNU LIBRARY GENERAL PUBLIC LICENSE"), in which case the
+ * provisions of LGPL are applicable instead of those above.  If you wish to
+ * allow use of your version of this file only under the terms of the LGPL
+ * License and not to allow others to use your version of this file under
+ * the MPL, indicate your decision by deleting the provisions above and
+ * replace them with the notice and other provisions required by the LGPL.
+ * If you do not delete the provisions above, a recipient may use your version
+ * of this file under either the MPL or the GNU LIBRARY GENERAL PUBLIC LICENSE.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- * 
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- * Boston, MA  02110-1301, USA.
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the MPL as stated above or under the terms of the GNU
+ * Library General Public License as published by the Free Software Foundation;
+ * either version 2 of the License, or any later version.
  *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Library general Public License for more
+ * details.
  *
  * If you didn't download this code from the following link, you should check if
  * you aren't using an obsolete version:
@@ -56,11 +66,11 @@ import com.lowagie.text.DocWriter;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.ExceptionConverter;
-// import com.lowagie.text.Image; // ssteward: dropped in 1.44
-// import com.lowagie.text.ImgWMF; // ssteward: dropped in 1.44
+import com.lowagie.text.Image;
+import com.lowagie.text.ImgWMF;
 import com.lowagie.text.Rectangle;
-// import com.lowagie.text.Table; ssteward: dropped in 1.44
-// import com.lowagie.text.ImgPostscript; ssteward: dropped in 1.44
+import com.lowagie.text.Table;
+import com.lowagie.text.ImgPostscript;
 
 /**
  * A <CODE>DocWriter</CODE> class for PDF.
@@ -554,7 +564,7 @@ public class PdfWriter extends DocWriter {
          * @throws IOException
          */
         public void toPdf(PdfWriter writer, OutputStream os) throws IOException {
-            os.write(getISOBytes("trailer\n")); // ssteward: 1.44 - preserve newline after trailer
+            os.write(getISOBytes("trailer\n"));
             super.toPdf(null, os);
             os.write(getISOBytes("\nstartxref\n"));
             os.write(getISOBytes(String.valueOf(offset)));
@@ -676,7 +686,7 @@ public class PdfWriter extends DocWriter {
     protected PdfDictionary imageDictionary = new PdfDictionary();
     
     /** This is the list with all the images in the document. */
-    // private HashMap images = new HashMap();
+    private HashMap images = new HashMap();
     
     /** The form XObjects in this document. The key is the xref and the value
         is Object[]{PdfName, template}.*/
@@ -918,7 +928,6 @@ public class PdfWriter extends DocWriter {
      * @throws PdfException on error
      * @throws DocumentException on error
      */
-	/* ssteward: dropped in 1.44
     PdfName addDirectImageSimple(Image image) throws PdfException, DocumentException {
         PdfName name;
         // if the images is already added, just retrieve the name
@@ -981,7 +990,6 @@ public class PdfWriter extends DocWriter {
         }
         return name;
     }
-	*/
 
     /**
      * Writes a <CODE>PdfImage</CODE> to the outputstream.
@@ -990,7 +998,7 @@ public class PdfWriter extends DocWriter {
      * @return a <CODE>PdfIndirectReference</CODE> to the encapsulated image
      * @throws PdfException when a document isn't open yet, or has been closed
      */
-    /* ssteward: dropped in 1.44
+    
     PdfIndirectReference add(PdfImage pdfImage) throws PdfException {
         if (! imageDictionary.contains(pdfImage.name())) {
             checkPDFXConformance(this, PDFXKEY_IMAGE, pdfImage);
@@ -1006,8 +1014,7 @@ public class PdfWriter extends DocWriter {
         }
         return (PdfIndirectReference) imageDictionary.get(pdfImage.name());
     }
-	*/
-    /* ssteward: gcc 3.4.0 doesn't have ICC_Profile
+    
     protected PdfIndirectReference add(PdfICCBased icc) throws PdfException {
         PdfIndirectObject object;
         try {
@@ -1018,7 +1025,6 @@ public class PdfWriter extends DocWriter {
         }
         return object.getIndirectReference();
     }
-	*/
     
     /**
      * return the <CODE>PdfIndirectReference</CODE> to the image with a given name.
@@ -1185,7 +1191,7 @@ public class PdfWriter extends DocWriter {
             if (template != null && template.getIndirectReference() instanceof PRIndirectReference)
                 continue;
             if (template != null && template.getType() == PdfTemplate.TYPE_TEMPLATE) {
-                addToBody(template.getFormXObject(), template.getIndirectReference());
+                PdfIndirectObject obj = addToBody(template.getFormXObject(), template.getIndirectReference());
             }
         }
         // add all the dependencies in the imported pages
@@ -1197,12 +1203,12 @@ public class PdfWriter extends DocWriter {
         // add the color
         for (Iterator it = documentColors.values().iterator(); it.hasNext();) {
             ColorDetails color = (ColorDetails)it.next();
-            addToBody(color.getSpotColor(this), color.getIndirectReference());
+            PdfIndirectObject cobj = addToBody(color.getSpotColor(this), color.getIndirectReference());
         }
         // add the pattern
         for (Iterator it = documentPatterns.keySet().iterator(); it.hasNext();) {
             PdfPatternPainter pat = (PdfPatternPainter)it.next();
-            addToBody(pat.getPattern(), pat.getIndirectReference());
+            PdfIndirectObject pobj = addToBody(pat.getPattern(), pat.getIndirectReference());
         }
         // add the shading patterns
         for (Iterator it = documentShadingPatterns.keySet().iterator(); it.hasNext();) {
@@ -1357,11 +1363,10 @@ public class PdfWriter extends DocWriter {
      * @param table the <CODE>Table</CODE>
      * @return the bottom height of the just added table
      */
-    /* ssteward: dropped in 1.44
+    
     public float getTableBottom(Table table) {
         return pdf.bottom(table) - pdf.indentBottom();
     }
-	*/
     
     /**
 	 * Gets a pre-rendered table.
@@ -1369,11 +1374,10 @@ public class PdfWriter extends DocWriter {
 	 * @param table		Contains the table definition.  Its contents are deleted, after being pre-rendered.
      * @return a PdfTable
 	 */
-	/*  ssteward: dropped in 1.44
+	
 	public PdfTable getPdfTable(Table table) {
 		return pdf.getPdfTable(table, true);
 	}
-	*/
 
 	/**
 	 * Row additions to the original {@link Table} used to build the {@link PdfTable} are processed and pre-rendered,
@@ -1387,11 +1391,11 @@ public class PdfWriter extends DocWriter {
 	 * @throws DocumentException
 	 * @see #getPdfTable(Table)
 	 */
-	/* ssteward: dropped in 1.44
+	
 	public boolean breakTableIfDoesntFit(PdfTable table) throws DocumentException {
 		return pdf.breakTableIfDoesntFit(table);
 	}
-    */
+    
     /**
      * Checks if a <CODE>Table</CODE> fits the current page of the <CODE>PdfDocument</CODE>.
      *
@@ -1399,11 +1403,10 @@ public class PdfWriter extends DocWriter {
      * @param	margin	a certain margin
      * @return	<CODE>true</CODE> if the <CODE>Table</CODE> fits the page, <CODE>false</CODE> otherwise.
      */
-    /* ssteward: dropped in 1.44
+    
     public boolean fitsPage(Table table, float margin) {
         return pdf.bottom(table) > pdf.indentBottom() + margin;
     }
-	*/
     
     /**
      * Checks if a <CODE>Table</CODE> fits the current page of the <CODE>PdfDocument</CODE>.
@@ -1411,11 +1414,10 @@ public class PdfWriter extends DocWriter {
      * @param	table	the table that has to be checked
      * @return	<CODE>true</CODE> if the <CODE>Table</CODE> fits the page, <CODE>false</CODE> otherwise.
      */
-    /* ssteward: dropped in 1.44
+    
     public boolean fitsPage(Table table) {
         return fitsPage(table, 0);
     }
-	*/
     
     /**
      * Checks if a <CODE>PdfPTable</CODE> fits the current page of the <CODE>PdfDocument</CODE>.
@@ -1424,11 +1426,9 @@ public class PdfWriter extends DocWriter {
      * @param	margin	a certain margin
      * @return	<CODE>true</CODE> if the <CODE>PdfPTable</CODE> fits the page, <CODE>false</CODE> otherwise.
      */
-	/* ssteward: dropped in 1.44
     public boolean fitsPage(PdfPTable table, float margin) {
         return pdf.fitsPage(table, margin);
     }
-	*/
     
     /**
      * Checks if a <CODE>PdfPTable</CODE> fits the current page of the <CODE>PdfDocument</CODE>.
@@ -1436,11 +1436,9 @@ public class PdfWriter extends DocWriter {
      * @param	table	the table that has to be checked
      * @return	<CODE>true</CODE> if the <CODE>PdfPTable</CODE> fits the page, <CODE>false</CODE> otherwise.
      */
-	/* ssteward: dropped in 1.44
     public boolean fitsPage(PdfPTable table) {
         return pdf.fitsPage(table, 0);
     }
-	*/
     
     /**
      * Gets the current vertical page position.
@@ -1460,7 +1458,7 @@ public class PdfWriter extends DocWriter {
      */
     
     boolean isPaused() {
-	// ssteward: changed from "pause" to "m_pause" to
+	// SID: changed from "pause" to "m_pause" to
 	// bring in line with DocWriter
         return m_pause;
     }
@@ -1536,7 +1534,7 @@ public class PdfWriter extends DocWriter {
         }
         FontDetails ret = (FontDetails)documentFonts.get(bf);
         if (ret == null) {
-            checkPDFXConformance(this, PDFXKEY_FONT, bf); 
+            checkPDFXConformance(this, PDFXKEY_FONT, bf);
             ret = new FontDetails(new PdfName("F" + (fontNumber++)), body.getPdfIndirectReference(), bf);
             documentFonts.put(bf, ret);
         }
@@ -1582,7 +1580,7 @@ public class PdfWriter extends DocWriter {
                         patternColorspaceRGB = new ColorDetails(getColorspaceName(), body.getPdfIndirectReference(), null);
                         PdfArray array = new PdfArray(PdfName.PATTERN);
                         array.add(PdfName.DEVICERGB);
-                        addToBody(array, patternColorspaceRGB.getIndirectReference());
+                        PdfIndirectObject cobj = addToBody(array, patternColorspaceRGB.getIndirectReference());
                     }
                     return patternColorspaceRGB;
                 case ExtendedColor.TYPE_CMYK:
@@ -1590,7 +1588,7 @@ public class PdfWriter extends DocWriter {
                         patternColorspaceCMYK = new ColorDetails(getColorspaceName(), body.getPdfIndirectReference(), null);
                         PdfArray array = new PdfArray(PdfName.PATTERN);
                         array.add(PdfName.DEVICECMYK);
-                        addToBody(array, patternColorspaceCMYK.getIndirectReference());
+                        PdfIndirectObject cobj = addToBody(array, patternColorspaceCMYK.getIndirectReference());
                     }
                     return patternColorspaceCMYK;
                 case ExtendedColor.TYPE_GRAY:
@@ -1598,7 +1596,7 @@ public class PdfWriter extends DocWriter {
                         patternColorspaceGRAY = new ColorDetails(getColorspaceName(), body.getPdfIndirectReference(), null);
                         PdfArray array = new PdfArray(PdfName.PATTERN);
                         array.add(PdfName.DEVICEGRAY);
-                        addToBody(array, patternColorspaceGRAY.getIndirectReference());
+                        PdfIndirectObject cobj = addToBody(array, patternColorspaceGRAY.getIndirectReference());
                     }
                     return patternColorspaceGRAY;
                 case ExtendedColor.TYPE_SEPARATION: {
@@ -1608,7 +1606,7 @@ public class PdfWriter extends DocWriter {
                         patternDetails = new ColorDetails(getColorspaceName(), body.getPdfIndirectReference(), null);
                         PdfArray array = new PdfArray(PdfName.PATTERN);
                         array.add(details.getIndirectReference());
-                        addToBody(array, patternDetails.getIndirectReference());
+                        PdfIndirectObject cobj = addToBody(array, patternDetails.getIndirectReference());
                         documentSpotPatterns.put(details, patternDetails);
                     }
                     return patternDetails;
@@ -1667,7 +1665,7 @@ public class PdfWriter extends DocWriter {
     PdfObject[] addSimpleProperty(Object prop, PdfIndirectReference refi) {
         if (!documentProperties.containsKey(prop)) {
             if (prop instanceof PdfOCG)
-				checkPDFXConformance(this, PDFXKEY_LAYER, null);
+                checkPDFXConformance(this, PDFXKEY_LAYER, null);
             documentProperties.put(prop, new PdfObject[]{new PdfName("Pr" + (documentProperties.size() + 1)), refi});
         }
         return (PdfObject[])documentProperties.get(prop);
@@ -1780,7 +1778,7 @@ public class PdfWriter extends DocWriter {
                 throw new RuntimeException("The name '" + name + "' has no local destination.");
             if (obj[1] == null)
                 obj[1] = getPdfIndirectReference();
-            addToBody(destination, (PdfIndirectReference)obj[1]);
+            PdfIndirectObject iob = addToBody(destination, (PdfIndirectReference)obj[1]);
         }
     }
     
@@ -2343,7 +2341,7 @@ public class PdfWriter extends DocWriter {
     public int getPDFXConformance() {
         return pdfxConformance;
     }
-
+    
     static void checkPDFXConformance(PdfWriter writer, int key, Object obj1) {
         if (writer == null || writer.pdfxConformance == PDFXNONE)
             return;
@@ -2390,8 +2388,6 @@ public class PdfWriter extends DocWriter {
                     throw new PdfXConformanceException("All the fonts must be embedded.");
                 break;
             case PDFXKEY_IMAGE:
-				break;
-				/*
                 PdfImage image = (PdfImage)obj1;
                 if (image.get(PdfName.SMASK) != null)
                     throw new PdfXConformanceException("The /SMask key is not allowed in images.");
@@ -2410,7 +2406,7 @@ public class PdfWriter extends DocWriter {
                         }
                         break;
                 }
-				*/
+                break;
             case PDFXKEY_GSTATE:
                 PdfDictionary gs = (PdfDictionary)obj1;
                 PdfObject obj = gs.get(PdfName.BM);
@@ -2506,7 +2502,7 @@ public class PdfWriter extends DocWriter {
      * @param size the size
      */    
     public void setBoxSize(String boxName, Rectangle size) {
-		pdf.setBoxSize(boxName, size);
+        pdf.setBoxSize(boxName, size);
     }
     
     /**
@@ -2589,11 +2585,9 @@ public class PdfWriter extends DocWriter {
      * @throws PdfException on error
      * @throws DocumentException or error
      */    
-	/* ssteward: dropped in 1.44
     public void setThumbnail(Image image) throws PdfException, DocumentException {
         pdf.setThumbnail(image);
     }
-	*/
 
 	/**
 	 * A UserUnit is a value that defines the default user space unit.

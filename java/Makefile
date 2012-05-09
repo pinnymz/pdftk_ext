@@ -34,9 +34,9 @@ sources= $(wildcard com/lowagie/text/*.java)
 sources+= $(wildcard com/lowagie/text/markup/*.java)
 sources+= $(wildcard com/lowagie/text/pdf/*.java)
 sources+= com/lowagie/text/pdf/PdfEncryption.java
-#sources+= $(wildcard com/lowagie/text/pdf/codec/*.java)
-#sources+= $(wildcard com/lowagie/text/pdf/codec/wmf/*.java)
-#sources+= $(wildcard com/lowagie/text/pdf/codec/postscript/*.java)
+sources+= $(wildcard com/lowagie/text/pdf/codec/*.java)
+sources+= $(wildcard com/lowagie/text/pdf/codec/wmf/*.java)
+sources+= $(wildcard com/lowagie/text/pdf/codec/postscript/*.java)
 sources+= $(wildcard com/lowagie/text/pdf/fonts/*.java)
 sources+= $(wildcard com/lowagie/text/xml/xmp/*.java)
 #sources+= $(wildcard com/lowagie/bc/asn1/*.java)
@@ -69,7 +69,7 @@ endif
 
 # don't create class list from java filenames because it omits local classes
 java_lib.o : $(headers) $(sources)
-	$(GJAR) -cf java_lib.jar com/lowagie/*/*/*/*.class com/lowagie/*/*/*.class com/lowagie/*/*.class org/bouncycastle/*/*.class org/bouncycastle/*/*/*.class $(afms)
+	$(GJAR) -cf java_lib.jar com/lowagie/*/*/*/*/*.class com/lowagie/*/*/*/*.class com/lowagie/*/*/*.class com/lowagie/*/*.class org/bouncycastle/*/*.class org/bouncycastle/*/*/*.class $(afms)
 	$(GCJ) $(GCJFLAGS) -c java_lib.jar
 
 ifdef GCJ_LOCAL_LIB
@@ -88,9 +88,9 @@ itext_clean :
 	$(MAKE) -iC "$(JAVALIBPATH)/com/lowagie/text" clean;
 	$(MAKE) -iC "$(JAVALIBPATH)/com/lowagie/text/markup" clean;
 	$(MAKE) -iC "$(JAVALIBPATH)/com/lowagie/text/pdf" clean;
-#	$(MAKE) -iC "$(JAVALIBPATH)/com/lowagie/text/pdf/codec" clean;
-#	$(MAKE) -iC "$(JAVALIBPATH)/com/lowagie/text/pdf/codec/wmf" clean;
-#	$(MAKE) -iC "$(JAVALIBPATH)/com/lowagie/text/pdf/codec/postscript" clean;
+	$(MAKE) -iC "$(JAVALIBPATH)/com/lowagie/text/pdf/codec" clean;
+	$(MAKE) -iC "$(JAVALIBPATH)/com/lowagie/text/pdf/codec/wmf" clean;
+	$(MAKE) -iC "$(JAVALIBPATH)/com/lowagie/text/pdf/codec/postscript" clean;
 	$(MAKE) -iC "$(JAVALIBPATH)/com/lowagie/text/pdf/fonts" clean;
 	$(MAKE) -iC "$(JAVALIBPATH)/com/lowagie/text/xml/xmp" clean;
 #	$(MAKE) -iC "$(JAVALIBPATH)/com/lowagie/bc/asn1" clean;

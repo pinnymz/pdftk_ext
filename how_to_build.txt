@@ -1,0 +1,22 @@
+Building pdftk v1.44.2
+
+This code has successfully been built using Ubuntu 11.10 with gcc/gjc 4.6.1
+
+Please note that the codebase has been updated with the 'customise_build_parameters' and 'fix_double_pw_prompt_bug' debian patches.  Also note that the .2 update includes much of the iText library that had been removed after 1.41.
+
+If using a VM, ensure that you have at least 1.5GB RAM allocated - running with less may cause a buffer error while building the required libraries.
+
+
+1) Move to the 'pdftk' directory.
+
+  cd ./pdftk
+
+2) Run the make command to produce the pdftk executable.  This may take a _long_ time on the first try as it needs to build the iText library before linking.  You will see many warnings about not conforming to serializable standards, unused local variables, deprecations, and the like.  These are safe to ignore.
+
+  make -f Makefile.Debian
+
+NOTE: During the library build there may be warnings about variable tracking limits.  The gcj system will automatically attempt to retry the build without variable tracking.  If it gives up after retrying, you likely don't have enough memory allocated (see above regarding using a VM).
+
+3) Test it out
+
+  ./pdftk --version

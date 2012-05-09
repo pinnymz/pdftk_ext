@@ -56,9 +56,11 @@
 #include <java/util/ArrayList.h>
 #include <java/util/Iterator.h>
 #include <java/util/HashMap.h>
+#include <java/util/Set.h>
 
 #include "com/lowagie/text/Document.h"
 #include "com/lowagie/text/Rectangle.h"
+#include "com/lowagie/text/Image.h"
 #include "com/lowagie/text/pdf/PdfName.h"
 #include "com/lowagie/text/pdf/PdfString.h"
 #include "com/lowagie/text/pdf/PdfNumber.h"
@@ -80,6 +82,7 @@
 #include "com/lowagie/text/pdf/PdfIndirectObject.h"
 #include "com/lowagie/text/pdf/PdfFileSpecification.h"
 #include "com/lowagie/text/pdf/PdfBoolean.h"
+#include "org/bouncycastle/util/encoders/Base64.h"
 
 #include "com/lowagie/text/pdf/RandomAccessFileOrArray.h" // for InputStreamToArray()
 
@@ -94,6 +97,9 @@ namespace java {
 namespace itext {
 	using namespace com::lowagie::text;
 	using namespace com::lowagie::text::pdf;
+}
+namespace bouncycastle{
+	using namespace org::bouncycastle::util::encoders;
 }
 
 #include "pdftk.h"
@@ -422,6 +428,9 @@ TK_Session::is_keyword( char* ss, int* keyword_len_p )
 	else if( strcmp( ss_copy, "stamp" )== 0 ) {
 		return stamp_k;
 	}
+    else if( strcmp( ss_copy, "stamp_detailed" )== 0) {
+      return stamp_detailed_k;
+    }
 	
 	// cat range keywords
   else if( strncmp( ss_copy, "end", 3 )== 0 ) { // note: strncmp
@@ -432,10 +441,10 @@ TK_Session::is_keyword( char* ss, int* keyword_len_p )
     *keyword_len_p= 4; // note: fixed size
     return even_k;
   }
-  else if( strncmp( ss_copy, "odd", 3 )== 0 ) { // note: strncmp
-    *keyword_len_p= 3; // note: fixed size
-    return odd_k;
-  }
+  //else if( strncmp( ss_copy, "odd", 3 )== 0 ) { // note: strncmp
+  //  *keyword_len_p= 3; // note: fixed size
+  //  return odd_k;
+  //}
 
 	// file attachment option
 	else if( strcmp( ss_copy, "to_page" )== 0 ||
@@ -884,6 +893,7 @@ TK_Session::TK_Session( int argc,
  	m_form_data_filename(),
  	m_background_filename(),
  	m_stamp_filename(),
+	m_stamp_detailed_filename(),
  	m_output_filename(),
 	m_output_utf8_b( false ),
  	m_output_owner_pw(),
@@ -1034,6 +1044,10 @@ TK_Session::TK_Session( int argc,
 				m_operation= filter_k;
 				m_multistamp_b= true;
 				arg_state= stamp_filename_e;
+			}
+			else if( arg_keyword== stamp_detailed_k ) {
+				m_operation= filter_k;
+				arg_state= stamp_detailed_filename_e;
 			}
 			else if( arg_keyword== output_k ) { // we reached the output section
 				arg_state= output_filename_e;
@@ -1190,6 +1204,41 @@ TK_Session::TK_Session( int argc,
 			}
     }
     break;
+
+	case expand_filter_e:{	//test for filter commands
+			if( arg_keyword== fill_form_k ) {
+				arg_state= form_data_filename_e; // look for an FDF filename
+			}
+
+			else if( arg_keyword== background_k ) {
+				arg_state= background_filename_e;
+			}
+			else if (arg_keyword== multibackground_k ) {
+				arg_state= background_filename_e;
+			}
+			else if( arg_keyword== stamp_detailed_k ) {
+				arg_state= stamp_detailed_filename_e;
+			}
+			else if( arg_keyword== stamp_k ) {
+				arg_state= stamp_filename_e;
+			}
+			else if( arg_keyword== multistamp_k ) {
+				arg_state= stamp_filename_e;
+			}
+			else if( arg_keyword== output_k ) { // we reached the output section
+				arg_state= output_filename_e;
+			}
+			else { // error: unexpected keyword; remark and set fail_b
+				cerr << "Error: Unexpected command-line data: " << endl;
+				cerr << "      " << argv[ii] << endl;
+				cerr << "   where we were expecting one of the following keyword operations:" << endl;
+				cerr << "   \"fill_form\", \"background\", \"multibackground\", \"stamp\"," << endl;
+				cerr << "   \"multistamp\", \"stamp_detailed\"." << endl;
+				cerr << "   Exiting." << endl;
+				fail_b= true;
+			}
+	} //end: expand_filter
+	break;
 
     case page_seq_e: {
       if( m_page_seq.empty() ) {
@@ -1493,7 +1542,7 @@ TK_Session::TK_Session( int argc,
 					}
 
 					// advance state
-					arg_state= output_e; // look for an output filename
+					arg_state= expand_filter_e; //look for additional filter commands or output keyword
 				}
 			else { // error
 				cerr << "Error: expecting a form data filename," << endl;
@@ -1879,7 +1928,33 @@ TK_Session::TK_Session( int argc,
 			// to preserve backward-compatibility with pdftk 1.00 where "background"
 			// was documented as an output option; in pdftk 1.10 we changed it to
 			// an operation
-			arg_state= output_args_e;
+			arg_state= expand_filter_e; //look for additional filter commands or output keyword
+		}
+		break;
+
+		case stamp_detailed_filename_e : {
+			if( arg_keyword== none_k ) {
+				if( m_stamp_detailed_filename.empty() ) {
+					m_stamp_detailed_filename= argv[ii];
+				}
+				else { // error
+					cerr << "Error: Multiple detailed stamp filenames given: " << endl;
+					cerr << "   " << m_stamp_filename << " and " << argv[ii] << endl;
+					cerr << "Exiting." << endl;
+					fail_b= true;
+					break;
+				}
+			}
+			else { // error
+				cerr << "Error: expecting a PDF filename for detailed stamp operation," << endl;
+				cerr << "   instead I got this keyword: " << argv[ii] << endl;
+				cerr << "Exiting." << endl;
+				fail_b= true;
+				break;
+			}
+
+			// advance state
+			arg_state= expand_filter_e; //look for additional filter commands or output keyword
 		}
 		break;
 
@@ -1905,7 +1980,7 @@ TK_Session::TK_Session( int argc,
 			}
 
 			// advance state
-			arg_state= output_e; // look for an output filename
+			arg_state= expand_filter_e; //look for additional filter commands or output keyword
 		}
 		break;
 
@@ -2461,6 +2536,9 @@ TK_Session::create_output()
 				// try opening the PDF background or stamp before we get too involved
 				itext::PdfReader* mark_p= 0;
 				bool background_b= true; // set false for stamp
+				itext::FdfReader* sd_fdf_reader_p= 0;
+				itext::XfdfReader* sd_xfdf_reader_p= 0;
+				
 				//
 				// background
 				if( m_background_filename== "PROMPT" ) {
@@ -2481,9 +2559,56 @@ TK_Session::create_output()
 						break;
 					}
 				}
+				else if( !m_stamp_detailed_filename.empty() ) { // detailed stamp
+					background_b= false;
+					if( m_stamp_detailed_filename== "PROMPT" ) {
+						prompt_for_filename( "Please enter a filename for the detailed stamp file:", 
+																 m_stamp_detailed_filename );
+					}
+					if( m_stamp_detailed_filename== "-" ) { // stamp detail on stdin
+						JArray<jbyte>* in_arr= itext::RandomAccessFileOrArray::InputStreamToArray( java::System::in );
+						
+						// first try fdf
+						try {
+							sd_fdf_reader_p= new itext::FdfReader( in_arr );
+						}
+						catch( java::io::IOException* ioe_p ) { // file open error
+							// maybe it's xfdf?
+							try {
+								sd_xfdf_reader_p= new itext::XfdfReader( in_arr );
+							}
+							catch( java::io::IOException* ioe_p ) { // file open error
+								cerr << "Error: Failed to open detailed stamp file: " << endl;
+								cerr << "   " << m_stamp_detailed_filename << endl;
+								cerr << "   No output created." << endl;
+								break;
+							}
+						}
+					}
+					else { // detailed stamp file
+						// first try fdf
+						try {
+							sd_fdf_reader_p=
+								new itext::FdfReader( JvNewStringUTF( m_stamp_detailed_filename.c_str() ) );
+						}
+						catch( java::io::IOException* ioe_p ) { // file open error
+							// maybe it's xfdf?
+							try {
+								sd_xfdf_reader_p=
+									new itext::XfdfReader( JvNewStringUTF( m_stamp_detailed_filename.c_str() ) );
+							}
+							catch( java::io::IOException* ioe_p ) { // file open error
+								cerr << "Error: Failed to open detailed stamp file: " << endl;
+								cerr << "   " << m_stamp_detailed_filename << endl;
+								cerr << "   No output created." << endl;
+								break;
+							}
+						}
+					}					
+				}
 				//
 				// stamp
-				if( !mark_p ) {
+				else if( !m_stamp_filename.empty() ) {
 					if( m_stamp_filename== "PROMPT" ) {
 						prompt_for_filename( "Please enter a filename for the stamp PDF:", 
 																 m_stamp_filename );
@@ -2744,7 +2869,49 @@ TK_Session::create_output()
 						}
 					}
 				}
-
+				// add detailed stamping?
+				if ( sd_fdf_reader_p || 
+						sd_xfdf_reader_p ){
+					java::util::HashMap* sd_map_p= sd_fdf_reader_p ? sd_fdf_reader_p->getFields() : sd_xfdf_reader_p->getFields();
+					itext::AcroFields* fields_p= writer_p->getAcroFields();
+					bool valid_image_b = true;
+					jint num_pages= input_reader_p->getNumberOfPages();
+					for( jint ii= 0; ii< num_pages; ) {
+						++ii;
+						com::lowagie::text::pdf::PdfContentByte* content_byte_p= 
+							( background_b ) ? writer_p->getUnderContent( ii ) : writer_p->getOverContent( ii );
+						java::util::Iterator* it = sd_map_p->keySet()->iterator();
+						while (it->hasNext() && valid_image_b){
+							jstring nextKey = (jstring)(it->next());
+							if (fields_p->getField(nextKey)){
+								jfloatArray pos_array_p = (jfloatArray)(fields_p->getFieldPositions(nextKey));
+								if (elements(*pos_array_p)[0] == (jfloat)(ii))
+								{
+									try{
+										jstring imgStringEncoded= (jstring)(sd_map_p->get(nextKey));
+										jbyteArray imgArrayDecoded= org::bouncycastle::util::encoders::Base64::decode(imgStringEncoded);
+										com::lowagie::text::Image* img= com::lowagie::text::Image::getInstance(imgArrayDecoded);
+										jfloat llx = elements(*pos_array_p)[1];
+										jfloat lly = elements(*pos_array_p)[2];
+										jfloat urx = elements(*pos_array_p)[3];
+										jfloat ury = elements(*pos_array_p)[4];
+										img->scaleToFit(urx- llx, ury-lly);
+										img->setAbsolutePosition((llx+ urx- img->scaledWidth())/2, lly);
+										content_byte_p->addImage(img);
+										fields_p->removeField(nextKey, ii);
+									}
+									catch( java::io::IOException* ioe_p ) { // file open error
+										cerr << "Error: Failed to open image file: " << endl;
+										cerr << "   " << (char*)elements(((jstring)(sd_map_p->get(nextKey)))->getBytes()) << endl;
+										cerr << "   No output created." << endl;
+										valid_image_b = false;
+									}
+								}
+							}
+						}
+						if (!valid_image_b){ break; }
+					}
+				}
 				// attach file to document?
 				if( !m_input_attach_file_filename.empty() ) {
 					this->attach_files( input_reader_p,
@@ -2997,7 +3164,7 @@ describe_synopsis() {
 	    [ cat | shuffle | burst |\n\
 	      generate_fdf | fill_form |\n\
 	      background | multibackground |\n\
-	      stamp | multistamp |\n\
+	      stamp | multistamp | stamp_detailed |\n\
 	      dump_data | dump_data_utf8 |\n\
 	      dump_data_fields | dump_data_fields_utf8 |\n\
 	      update_info | update_info_utf8 |\n\
@@ -3242,6 +3409,12 @@ OPTIONS\n\
 		 If the input PDF has more pages than the stamp PDF, then the\n\
 		 final stamp page is repeated across these remaining pages in\n\
 		 the input PDF.\n\
+\n\
+	  stamp_detailed <FDF data filename | XFDF data filename | - | PROMPT>\n\
+		 filename - is an FDF / XFDF formatted document  with keys that\n\
+		 represent field names to be used as placeholders for the imag-\n\
+		 es in the document represented in 'base64' encoded form as the\n\
+		 value.\n\
 \n\
 	  dump_data\n\
 		 Reads a single, input PDF file and reports various statis-\n\

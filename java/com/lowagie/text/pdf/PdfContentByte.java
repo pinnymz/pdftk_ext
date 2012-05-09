@@ -4,6 +4,13 @@
  *
  * Copyright 1999, 2000, 2001, 2002 Bruno Lowagie
  *
+ * The contents of this file are subject to the Mozilla Public License Version 1.1
+ * (the "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the License.
  *
  * The Original Code is 'iText, a free JAVA-PDF library'.
  *
@@ -16,22 +23,25 @@
  * Contributor(s): all the names of the contributors are added in the source code
  * where applicable.
  *
+ * Alternatively, the contents of this file may be used under the terms of the
+ * LGPL license (the "GNU LIBRARY GENERAL PUBLIC LICENSE"), in which case the
+ * provisions of LGPL are applicable instead of those above.  If you wish to
+ * allow use of your version of this file only under the terms of the LGPL
+ * License and not to allow others to use your version of this file under
+ * the MPL, indicate your decision by deleting the provisions above and
+ * replace them with the notice and other provisions required by the LGPL.
+ * If you do not delete the provisions above, a recipient may use your version
+ * of this file under either the MPL or the GNU LIBRARY GENERAL PUBLIC LICENSE.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- * 
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- * Boston, MA  02110-1301, USA.
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the MPL as stated above or under the terms of the GNU
+ * Library General Public License as published by the Free Software Foundation;
+ * either version 2 of the License, or any later version.
  *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Library general Public License for more
+ * details.
  *
  * If you didn't download this code from the following link, you should check if
  * you aren't using an obsolete version:
@@ -42,15 +52,15 @@ package com.lowagie.text.pdf;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
-// import java.util.Iterator;
+import java.util.Iterator;
 import java.awt.geom.AffineTransform;
-// import java.awt.print.PrinterJob;
+import java.awt.print.PrinterJob;
 
-// import com.lowagie.text.DocumentException;
+import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
-// import com.lowagie.text.Image; ssteward: dropped in 1.44
+import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
-// import com.lowagie.text.Annotation;
+import com.lowagie.text.Annotation;
 import com.lowagie.text.ExceptionConverter;
 
 /**
@@ -125,7 +135,7 @@ public class PdfContentByte {
     /** A possible text rendering value */
     public static final int TEXT_RENDER_MODE_CLIP = 7;
     
-    // private static final float[] unitRect = {0, 0, 0, 1, 1, 0, 1, 1};
+    private static final float[] unitRect = {0, 0, 0, 1, 1, 0, 1, 1};
     // membervariables
     
     /** This is the actual content */
@@ -465,7 +475,7 @@ public class PdfContentByte {
      * @param	blue	the intensity of blue. A value between 0 and 1
      */
     private void HelperRGB(float red, float green, float blue) {
-	PdfWriter.checkPDFXConformance(writer, PdfWriter.PDFXKEY_RGB, null);
+        PdfWriter.checkPDFXConformance(writer, PdfWriter.PDFXKEY_RGB, null);
         if (red < 0)
             red = 0.0f;
         else if (red > 1.0f)
@@ -829,7 +839,7 @@ public class PdfContentByte {
             resetRGBColorFill();
         }
         else if (rectangle.grayFill() > 0.0) {
-            setGrayFill(rectangle.grayFill());
+            setGrayFill((float)rectangle.grayFill());
             rectangle(x1, y1, x2 - x1, y2 - y1);
             fill();
             resetGrayFill();
@@ -850,7 +860,7 @@ public class PdfContentByte {
         else {
             // the width is set to the width of the element
             if (rectangle.borderWidth() != Rectangle.UNDEFINED) {
-                setLineWidth(rectangle.borderWidth());
+                setLineWidth((float)rectangle.borderWidth());
             }
 
             // the color is set to the color of the element
@@ -978,11 +988,9 @@ public class PdfContentByte {
      * @param image the <CODE>Image</CODE> object
      * @throws DocumentException if the <CODE>Image</CODE> does not have absolute positioning
      */
-    /* ssteward: dropped in 1.44
     public void addImage(Image image) throws DocumentException {
         addImage(image, false);
     }
-    */
     
     /**
      * Adds an <CODE>Image</CODE> to the page. The <CODE>Image</CODE> must have
@@ -991,7 +999,6 @@ public class PdfContentByte {
      * @param inlineImage <CODE>true</CODE> to place this image inline, <CODE>false</CODE> otherwise
      * @throws DocumentException if the <CODE>Image</CODE> does not have absolute positioning
      */
-    /* ssteward: dropped in 1.44
     public void addImage(Image image, boolean inlineImage) throws DocumentException {
         if (!image.hasAbsolutePosition())
             throw new DocumentException("The image must have absolute positioning.");
@@ -1000,7 +1007,6 @@ public class PdfContentByte {
         matrix[Image.CY] = image.absoluteY() - matrix[Image.CY];
         addImage(image, matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5], inlineImage);
     }
-    */
     
     /**
      * Adds an <CODE>Image</CODE> to the page. The positioning of the <CODE>Image</CODE>
@@ -1015,11 +1021,9 @@ public class PdfContentByte {
      * @param f an element of the transformation matrix
      * @throws DocumentException on error
      */
-    /* ssteward: dropped in 1.44
     public void addImage(Image image, float a, float b, float c, float d, float e, float f) throws DocumentException {
         addImage(image, a, b, c, d, e, f, false);
     }
-    */
     
     /**
      * Adds an <CODE>Image</CODE> to the page. The positioning of the <CODE>Image</CODE>
@@ -1035,7 +1039,6 @@ public class PdfContentByte {
      * @param inlineImage <CODE>true</CODE> to place this image inline, <CODE>false</CODE> otherwise
      * @throws DocumentException on error
      */
-    /*
     public void addImage(Image image, float a, float b, float c, float d, float e, float f, boolean inlineImage) throws DocumentException {
         try {
             if (image.getLayer() != null)
@@ -1143,7 +1146,6 @@ public class PdfContentByte {
             throw new DocumentException(ee);
         }
     }
-    */
     
     /**
      * Makes this <CODE>PdfContentByte</CODE> empty.
@@ -1459,7 +1461,7 @@ public class PdfContentByte {
         content.append_i('(');
         for (int k = 0; k < b.length; ++k) {
             byte c = b[k];
-            switch (c) {
+            switch ((int)c) {
                 case '\r':
                     content.append("\\r");
                     break;
@@ -1757,7 +1759,6 @@ public class PdfContentByte {
      * May be either positive or negative, but not zero.
      * @return the <CODE>PdfPatternPainter</CODE> where the pattern will be created
      */
-
     public PdfPatternPainter createPattern(float width, float height, float xstep, float ystep) {
         checkWriter();
         if ( xstep == 0.0f || ystep == 0.0f )
@@ -2617,11 +2618,9 @@ public class PdfContentByte {
      * @param height the height of the panel
      * @return a <CODE>Graphics2D</CODE>
      */
-    /* ssteward: dropped in 1.44
     public java.awt.Graphics2D createGraphicsShapes(float width, float height) {
         return new PdfGraphics2D(this, width, height, null, true, false, 0);
     }
-    */
     
     /** Gets a <CODE>Graphics2D</CODE> to print on. The graphics
      * are translated to PDF commands as shapes. No PDF fonts will appear.
@@ -2630,11 +2629,9 @@ public class PdfContentByte {
      * @param printerJob a printer job
      * @return a <CODE>Graphics2D</CODE>
      */
-    /* ssteward: dropped in 1.44
     public java.awt.Graphics2D createPrinterGraphicsShapes(float width, float height, PrinterJob printerJob) {
         return new PdfPrinterGraphics2D(this, width, height, null, true, false, 0, printerJob);
     }
-    */
 
     /** Gets a <CODE>Graphics2D</CODE> to write on. The graphics
      * are translated to PDF commands.
@@ -2642,11 +2639,9 @@ public class PdfContentByte {
      * @param height the height of the panel
      * @return a <CODE>Graphics2D</CODE>
      */
-    /* ssteward: dropped in 1.44
     public java.awt.Graphics2D createGraphics(float width, float height) {
         return new PdfGraphics2D(this, width, height, null, false, false, 0);
     }
-    */
     
     /** Gets a <CODE>Graphics2D</CODE> to print on. The graphics
      * are translated to PDF commands.
@@ -2655,11 +2650,9 @@ public class PdfContentByte {
      * @param printerJob
      * @return a <CODE>Graphics2D</CODE>
      */
-    /* ssteward: dropped in 1.44
     public java.awt.Graphics2D createPrinterGraphics(float width, float height, PrinterJob printerJob) {
         return new PdfPrinterGraphics2D(this, width, height, null, false, false, 0, printerJob);
     }
-    */
 
     /** Gets a <CODE>Graphics2D</CODE> to write on. The graphics
      * are translated to PDF commands.
@@ -2669,11 +2662,9 @@ public class PdfContentByte {
      * @param quality
      * @return a <CODE>Graphics2D</CODE>
      */
-    /* ssteward: dropped in 1.44
     public java.awt.Graphics2D createGraphics(float width, float height, boolean convertImagesToJPEG, float quality) {
         return new PdfGraphics2D(this, width, height, null, false, convertImagesToJPEG, quality);
     }
-    */
 
     /** Gets a <CODE>Graphics2D</CODE> to print on. The graphics
      * are translated to PDF commands.
@@ -2684,11 +2675,9 @@ public class PdfContentByte {
      * @param printerJob
      * @return a <CODE>Graphics2D</CODE>
      */
-    /* ssteward: dropped in 1.44
     public java.awt.Graphics2D createPrinterGraphics(float width, float height, boolean convertImagesToJPEG, float quality, PrinterJob printerJob) {
         return new PdfPrinterGraphics2D(this, width, height, null, false, convertImagesToJPEG, quality, printerJob);
     }
-    */
 
     /** Gets a <CODE>Graphics2D</CODE> to print on. The graphics
      * are translated to PDF commands.
@@ -2698,11 +2687,9 @@ public class PdfContentByte {
      * @param quality
      * @return A Graphics2D object
      */
-    /* ssteward: dropped in 1.44
     public java.awt.Graphics2D createGraphicsShapes(float width, float height, boolean convertImagesToJPEG, float quality) {
         return new PdfGraphics2D(this, width, height, null, true, convertImagesToJPEG, quality);
     }
-    */
 
     /** Gets a <CODE>Graphics2D</CODE> to print on. The graphics
      * are translated to PDF commands.
@@ -2713,11 +2700,9 @@ public class PdfContentByte {
      * @param printerJob
      * @return a Graphics2D object
      */
-    /* ssteward: dropped in 1.44
     public java.awt.Graphics2D createPrinterGraphicsShapes(float width, float height, boolean convertImagesToJPEG, float quality, PrinterJob printerJob) {
         return new PdfPrinterGraphics2D(this, width, height, null, true, convertImagesToJPEG, quality, printerJob);
     }
-    */
     
     /** Gets a <CODE>Graphics2D</CODE> to write on. The graphics
      * are translated to PDF commands.
@@ -2726,11 +2711,9 @@ public class PdfContentByte {
      * @param fontMapper the mapping from awt fonts to <CODE>BaseFont</CODE>
      * @return a <CODE>Graphics2D</CODE>
      */
-    /* ssteward: dropped in 1.44
     public java.awt.Graphics2D createGraphics(float width, float height, FontMapper fontMapper) {
         return new PdfGraphics2D(this, width, height, fontMapper, false, false, 0);
     }
-    */
     
     /** Gets a <CODE>Graphics2D</CODE> to print on. The graphics
      * are translated to PDF commands.
@@ -2740,11 +2723,9 @@ public class PdfContentByte {
      * @param printerJob a printer job
      * @return a <CODE>Graphics2D</CODE>
      */
-    /* ssteward: dropped in 1.44
     public java.awt.Graphics2D createPrinterGraphics(float width, float height, FontMapper fontMapper, PrinterJob printerJob) {
         return new PdfPrinterGraphics2D(this, width, height, fontMapper, false, false, 0, printerJob);
     }
-    */
     
     /** Gets a <CODE>Graphics2D</CODE> to write on. The graphics
      * are translated to PDF commands.
@@ -2755,11 +2736,9 @@ public class PdfContentByte {
      * @param quality the quality of the jpeg
      * @return a <CODE>Graphics2D</CODE>
      */
-    /* ssteward: dropped in 1.44
     public java.awt.Graphics2D createGraphics(float width, float height, FontMapper fontMapper, boolean convertImagesToJPEG, float quality) {
         return new PdfGraphics2D(this, width, height, fontMapper, false, convertImagesToJPEG, quality);
     }
-    */
 
     /** Gets a <CODE>Graphics2D</CODE> to print on. The graphics
      * are translated to PDF commands.
@@ -2771,11 +2750,9 @@ public class PdfContentByte {
      * @param printerJob a printer job
      * @return a <CODE>Graphics2D</CODE>
      */
-    /* ssteward: dropped in 1.44
     public java.awt.Graphics2D createPrinterGraphics(float width, float height, FontMapper fontMapper, boolean convertImagesToJPEG, float quality, PrinterJob printerJob) {
         return new PdfPrinterGraphics2D(this, width, height, fontMapper, false, convertImagesToJPEG, quality, printerJob);
     }
-    */
 
     PageResources getPageResources() {
         return pdf.getPageResources();

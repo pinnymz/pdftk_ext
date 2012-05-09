@@ -2,6 +2,13 @@
 /*
  * Copyright 2003 by Paulo Soares.
  *
+ * The contents of this file are subject to the Mozilla Public License Version 1.1
+ * (the "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the License.
  *
  * The Original Code is 'iText, a free JAVA-PDF library'.
  *
@@ -14,22 +21,25 @@
  * Contributor(s): all the names of the contributors are added in the source code
  * where applicable.
  *
+ * Alternatively, the contents of this file may be used under the terms of the
+ * LGPL license (the "GNU LIBRARY GENERAL PUBLIC LICENSE"), in which case the
+ * provisions of LGPL are applicable instead of those above.  If you wish to
+ * allow use of your version of this file only under the terms of the LGPL
+ * License and not to allow others to use your version of this file under
+ * the MPL, indicate your decision by deleting the provisions above and
+ * replace them with the notice and other provisions required by the LGPL.
+ * If you do not delete the provisions above, a recipient may use your version
+ * of this file under either the MPL or the GNU LIBRARY GENERAL PUBLIC LICENSE.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- * 
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- * Boston, MA  02110-1301, USA.
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the MPL as stated above or under the terms of the GNU
+ * Library General Public License as published by the Free Software Foundation;
+ * either version 2 of the License, or any later version.
  *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Library general Public License for more
+ * details.
  *
  * If you didn't download this code from the following link, you should check if
  * you aren't using an obsolete version:
@@ -287,7 +297,7 @@ public class AcroFields {
             Map.Entry entry = (Map.Entry)it.next();
             Item item = (Item)entry.getValue();
             String name = (String)entry.getKey();
-            // PdfObject v = PdfReader.getPdfObject(((PdfDictionary)item.merged.get(0)).get(PdfName.V));
+            PdfObject v = PdfReader.getPdfObject(((PdfDictionary)item.merged.get(0)).get(PdfName.V));
 			// ssteward: moved this logic to getField, where lastWasString is set;
 			// we also want to output empty fields, too;
             //if (v != null)
@@ -518,6 +528,7 @@ public class AcroFields {
             tx.setText(text);
             return tx.getAppearance();
         }
+        int arrsize = 0;
         if (opt != null) {
             ArrayList op = opt.getArrayList();
             String choices[] = new String[op.size()];
@@ -915,7 +926,7 @@ public class AcroFields {
      */    
     public boolean setFields(FdfReader fdf) throws IOException, DocumentException {
 		boolean ret_val_b= false; // ssteward
-        fdf.getFields();
+        HashMap fd = fdf.getFields();
         for (Iterator i = fields.keySet().iterator(); i.hasNext();) {
             String f = (String)i.next();
             String v = fdf.getFieldValue(f);
@@ -935,7 +946,7 @@ public class AcroFields {
      */
     public boolean setFields(XfdfReader xfdf) throws IOException, DocumentException {
 		boolean ret_val_b= false; // ssteward
-        xfdf.getFields();
+        HashMap fd = xfdf.getFields();
         for (Iterator i = fields.keySet().iterator(); i.hasNext();) {
             String f = (String)i.next();
             String v = xfdf.getFieldValue(f);
@@ -999,21 +1010,14 @@ public class AcroFields {
 			if( rich_value != null )
 				rv = new PdfString(rich_value, PdfObject.TEXT_UNICODE); // ssteward
             for (int idx = 0; idx < item.values.size(); ++idx) {
-
-				PdfDictionary item_value= (PdfDictionary)item.values.get(idx);
-                item_value.put(PdfName.V, v);
-                markUsed(item_value);
+                ((PdfDictionary)item.values.get(idx)).put(PdfName.V, v);
+                markUsed((PdfDictionary)item.values.get(idx));				
 				if( rich_value != null ) // ssteward
-					item_value.put(PdfName.RV, rv);
-				item_value.remove(PdfName.I); // ssteward; it might disagree w/ V in a Ch widget
-				// PDF spec this shouldn't matter, but Reader 9 gives I precedence over V
-
+					((PdfDictionary)item.values.get(idx)).put(PdfName.RV, rv);
                 PdfDictionary merged = (PdfDictionary)item.merged.get(idx);
                 merged.put(PdfName.V, v);
 				if( rich_value != null ) // ssteward
 					merged.put(PdfName.RV, rv);
-				merged.remove(PdfName.I); // ssteward
-				
                 PdfDictionary widget = (PdfDictionary)item.widgets.get(idx);
                 if (generateAppearances) {
                     PdfAppearance app = getAppearance(merged, display, name);
@@ -1426,7 +1430,7 @@ public class AcroFields {
             return null;
         Item item = (Item)fields.get(name);
         PdfDictionary merged = (PdfDictionary)item.merged.get(0);
-        // PdfObject vo = PdfReader.getPdfObject(merged.get(PdfName.V));
+        PdfObject vo = PdfReader.getPdfObject(merged.get(PdfName.V));
         return (PdfDictionary)PdfReader.getPdfObject(merged.get(PdfName.V));
     }
     

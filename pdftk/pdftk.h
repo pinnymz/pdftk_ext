@@ -102,6 +102,7 @@ public:
 		multibackground_k, // feature added by Bernhard R. Link <brlink@debian.org>, Johann Felix Soden <johfel@gmx.de>
 		stamp_k,
 		multistamp_k, // feature added by Bernhard R. Link <brlink@debian.org>, Johann Felix Soden <johfel@gmx.de>
+		stamp_detailed_k, //feature added by Pinny Markowitz <pinny@medwiztech.com>
 
 		// optional attach_file argument
 		attach_file_to_page_k,
@@ -170,6 +171,7 @@ public:
 	string m_form_data_filename;
 	string m_background_filename;
 	string m_stamp_filename;
+	string m_stamp_detailed_filename;
   string m_output_filename;
 	bool m_output_utf8_b;
 	string m_output_owner_pw;
@@ -213,6 +215,8 @@ private:
 	enum ArgState {
     input_files_e,
 		input_pw_e,
+		
+		expand_filter_e,
 
     page_seq_e,
 		form_data_filename_e,
@@ -233,6 +237,7 @@ private:
 
 		background_filename_e,
 		stamp_filename_e,
+		stamp_detailed_filename_e,
 
 		done_e
 	};

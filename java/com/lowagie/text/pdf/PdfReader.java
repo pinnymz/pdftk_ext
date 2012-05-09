@@ -5,6 +5,13 @@
  *
  * Copyright 2001, 2002 Paulo Soares
  *
+ * The contents of this file are subject to the Mozilla Public License Version 1.1
+ * (the "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the License.
  *
  * The Original Code is 'iText, a free JAVA-PDF library'.
  *
@@ -17,22 +24,25 @@
  * Contributor(s): all the names of the contributors are added in the source code
  * where applicable.
  *
+ * Alternatively, the contents of this file may be used under the terms of the
+ * LGPL license (the "GNU LIBRARY GENERAL PUBLIC LICENSE"), in which case the
+ * provisions of LGPL are applicable instead of those above.  If you wish to
+ * allow use of your version of this file only under the terms of the LGPL
+ * License and not to allow others to use your version of this file under
+ * the MPL, indicate your decision by deleting the provisions above and
+ * replace them with the notice and other provisions required by the LGPL.
+ * If you do not delete the provisions above, a recipient may use your version
+ * of this file under either the MPL or the GNU LIBRARY GENERAL PUBLIC LICENSE.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- * 
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- * Boston, MA  02110-1301, USA.
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the MPL as stated above or under the terms of the GNU
+ * Library General Public License as published by the Free Software Foundation;
+ * either version 2 of the License, or any later version.
  *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Library general Public License for more
+ * details.
  *
  * If you didn't download this code from the following link, you should check if
  * you aren't using an obsolete version:
@@ -418,7 +428,7 @@ public class PdfReader {
             return map;
         for (Iterator it = info.getKeys().iterator(); it.hasNext();) {
             PdfName key = (PdfName)it.next();
-            PdfObject obj = getPdfObject(info.get(key));
+            PdfObject obj = (PdfObject)getPdfObject(info.get(key));
             if (obj == null)
                 continue;
             String value = obj.toString();
@@ -783,14 +793,12 @@ public class PdfReader {
     }
     
     protected PRIndirectReference getSinglePage(int n) throws IOException {
-		/*
         PdfDictionary acc = new PdfDictionary();
         PdfDictionary top = rootPages;
         int base = 0;
         while (true) {
             break;
         }
-		*/
         return null;
     }
     
@@ -878,13 +886,13 @@ public class PdfReader {
     
     protected PdfObject readOneObjStm(PRStream stream, int idx) throws IOException {
         int first = ((PdfNumber)getPdfObject(stream.get(PdfName.FIRST))).intValue();
-        // int n = ((PdfNumber)getPdfObject(stream.get(PdfName.N))).intValue();
+        int n = ((PdfNumber)getPdfObject(stream.get(PdfName.N))).intValue();
         byte b[] = getStreamBytes(stream, tokens.getFile());
         PRTokeniser saveTokens = tokens;
         tokens = new PRTokeniser(b);
         try {
             int address = 0;
-            // int objNumber = 0;
+            int objNumber = 0;
             boolean ok = true;
             ++idx;
             for (int k = 0; k < idx; ++k) {
@@ -895,7 +903,7 @@ public class PdfReader {
                     ok = false;
                     break;
                 }
-                // objNumber = tokens.intValue();
+                objNumber = tokens.intValue();
                 ok = tokens.nextToken();
                 if (!ok)
                     break;
@@ -959,8 +967,8 @@ public class PdfReader {
             }
             xrefObj.set(k / 2, obj);
         }
-        // int fileLength = tokens.length();
-        // byte tline[] = new byte[16];
+        int fileLength = tokens.length();
+        byte tline[] = new byte[16];
         for (int k = 0; k < streams.size(); ++k) {
             checkPRStreamLength((PRStream)streams.get(k));
         }
@@ -1262,7 +1270,7 @@ public class PdfReader {
             int length = ((PdfNumber)sections.get(idx + 1)).intValue();
             ensureXrefSize((start + length) * 2);
             while (length-- > 0) {
-                // int total = 0;
+                int total = 0;
                 int type = 1;
                 if (wc[0] > 0) {
                     type = 0;
@@ -1418,22 +1426,11 @@ public class PdfReader {
                 int pos = tokens.getFilePointer();
                 // be careful in the trailer. May not be a "next" token.
                 if (tokens.nextToken() && tokens.getStringValue().equals("stream")) {
-					// ssteward - 6/21/10
-					// stream should be followed by a LF or a CRLF, but not just a CR, per the PDF spec.
-					// however, I have encountered a generated PDF (Microsoft Reporting Services 10.0.0.0)
-					// that added a space after "stream" but before the CR; so gobble up unexpected chars
-					// until we find a LF
                     int ch = tokens.read();
-					/*
                     if (ch != '\n')
                         ch = tokens.read();
                     if (ch != '\n')
                         tokens.backOnePosition(ch);
-					*/
-					// ssteward
-					while (ch != '\n')
-						ch = tokens.read();
-
                     PRStream stream = new PRStream(this, tokens.getFilePointer());
                     stream.putAll(dic);
                     stream.setObjNum(objNum, objGen);
@@ -1712,15 +1709,8 @@ public class PdfReader {
      */    
     public static byte[] LZWDecode(byte in[]) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-		// ssteward: pdftk 1.44
-		/* uses old Sun code
         LZWDecoder lzw = new LZWDecoder();
         lzw.decode(in, out);
-		*/
-		// new Apache Batik code
-		TIFFLZWDecoder tlzw= new TIFFLZWDecoder();
-		tlzw.decode( in, out );
-
         return out.toByteArray();
     }
     
@@ -2421,7 +2411,7 @@ public class PdfReader {
                 continue;
             }
             ArrayList arr = annots.getArrayList();
-            // int startSize = arr.size();
+            int startSize = arr.size();
             for (int j = 0; j < arr.size(); ++j) {
                 PdfDictionary annot = (PdfDictionary)getPdfObjectRelease((PdfObject)arr.get(j));
                 if (PdfName.WIDGET.equals(annot.get(PdfName.SUBTYPE)))

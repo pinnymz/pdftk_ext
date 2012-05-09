@@ -4,6 +4,13 @@
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
  *
+ * The contents of this file are subject to the Mozilla Public License Version 1.1
+ * (the "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the License.
  *
  * The Original Code is 'iText, a free JAVA-PDF library'.
  *
@@ -16,22 +23,25 @@
  * Contributor(s): all the names of the contributors are added in the source code
  * where applicable.
  *
+ * Alternatively, the contents of this file may be used under the terms of the
+ * LGPL license (the "GNU LIBRARY GENERAL PUBLIC LICENSE"), in which case the
+ * provisions of LGPL are applicable instead of those above.  If you wish to
+ * allow use of your version of this file only under the terms of the LGPL
+ * License and not to allow others to use your version of this file under
+ * the MPL, indicate your decision by deleting the provisions above and
+ * replace them with the notice and other provisions required by the LGPL.
+ * If you do not delete the provisions above, a recipient may use your version
+ * of this file under either the MPL or the GNU LIBRARY GENERAL PUBLIC LICENSE.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- * 
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- * 
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- * Boston, MA  02110-1301, USA.
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the MPL as stated above or under the terms of the GNU
+ * Library General Public License as published by the Free Software Foundation;
+ * either version 2 of the License, or any later version.
  *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Library general Public License for more
+ * details.
  *
  * If you didn't download this code from the following link, you should check if
  * you aren't using an obsolete version:
@@ -54,27 +64,27 @@ import java.util.TreeMap;
 import com.lowagie.text.Anchor;
 import com.lowagie.text.Annotation;
 import com.lowagie.text.BadElementException;
-// import com.lowagie.text.Cell; ssteward: dropped in 1.44
+import com.lowagie.text.Cell;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.DocListener;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.ExceptionConverter;
-// import com.lowagie.text.Graphic; ssteward: dropped in 1.44
-// import com.lowagie.text.HeaderFooter; ssteward: dropped in 1.44
-// import com.lowagie.text.Image; ssteward: dropped in 1.44
+import com.lowagie.text.Graphic;
+import com.lowagie.text.HeaderFooter;
+import com.lowagie.text.Image;
 import com.lowagie.text.List;
 import com.lowagie.text.ListItem;
 import com.lowagie.text.Meta;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
-// import com.lowagie.text.Section; ssteward: dropped in 1.44
-// import com.lowagie.text.SimpleTable; ssteward: dropped in 1.44
+import com.lowagie.text.Section;
+import com.lowagie.text.SimpleTable;
 import com.lowagie.text.StringCompare;
-// import com.lowagie.text.Table; ssteward: dropped in 1.44
-// import com.lowagie.text.Watermark; ssteward: dropped in 1.44
+import com.lowagie.text.Table;
+import com.lowagie.text.Watermark;
 import com.lowagie.text.xml.xmp.XmpWriter;
 
 /**
@@ -416,7 +426,7 @@ class PdfDocument extends Document implements DocListener {
     // images
     
     /** This is the image that could not be shown on a previous page. */
-    //private Image imageWait = null; ssteward: dropped in 1.44
+    private Image imageWait = null;
     
     /** This is the position where the image ends. */
     private float imageEnd = -1;
@@ -549,50 +559,49 @@ class PdfDocument extends Document implements DocListener {
      *
      * @param header the new header
      */
-    /* ssteward: dropped in 1.44
+    
     public void setHeader(HeaderFooter header) {
         if (writer != null && writer.isPaused()) {
             return;
         }
         super.setHeader(header);
     }
-    */
     
     /**
      * Resets the header of this document.
      */
-    /* ssteward: dropped in 1.44
+    
     public void resetHeader() {
         if (writer != null && writer.isPaused()) {
             return;
         }
         super.resetHeader();
     }
-    */
+    
     /**
      * Changes the footer of this document.
      *
      * @param	footer		the new footer
      */
-    /* ssteward: dropped in 1.44
+    
     public void setFooter(HeaderFooter footer) {
         if (writer != null && writer.isPaused()) {
             return;
         }
         super.setFooter(footer);
     }
-    */
+    
     /**
      * Resets the footer of this document.
      */
-    /* ssteward: dropped in 1.44
+    
     public void resetFooter() {
         if (writer != null && writer.isPaused()) {
             return;
         }
         super.resetFooter();
     }
-    */
+    
     /**
      * Sets the page number to 0.
      */
@@ -623,7 +632,7 @@ class PdfDocument extends Document implements DocListener {
      * @param watermark the watermark to add
      * @return <CODE>true</CODE> if the element was added, <CODE>false</CODE> if not.
      */
-    /* ssteward: dropped in 1.44
+    
     public boolean add(Watermark watermark) {
         if (writer != null && writer.isPaused()) {
             return false;
@@ -631,19 +640,17 @@ class PdfDocument extends Document implements DocListener {
         this.watermark = watermark;
         return true;
     }
-    */
     
     /**
      * Removes the <CODE>Watermark</CODE>.
      */
-    /* ssteward: dropped in 1.44
+    
     public void removeWatermark() {
         if (writer != null && writer.isPaused()) {
             return;
         }
         this.watermark = null;
     }
-    */
     
     /**
      * Sets the margins.
@@ -819,7 +826,7 @@ class PdfDocument extends Document implements DocListener {
             text.endText();
         else
             text = null;
-        writer.add(page, new PdfContents(writer.getDirectContentUnder(), graphics, text, writer.getDirectContent(), pageSize));
+        PdfIndirectReference pageReference = writer.add(page, new PdfContents(writer.getDirectContentUnder(), graphics, text, writer.getDirectContent(), pageSize));
         // we initialize the new page
         initPage();
         
@@ -926,9 +933,9 @@ class PdfDocument extends Document implements DocListener {
             return;
         }
         try {
-            boolean wasImage = false; // (imageWait != null); ssteward: dropped in 1.44
+            boolean wasImage = (imageWait != null);
             newPage();
-            if ( false || wasImage) newPage(); // imageWait != null  ssteward: dropped in 1.44
+            if (imageWait != null || wasImage) newPage();
             if (annotations.size() > 0)
                 throw new RuntimeException(annotations.size() + " annotations had invalid placement pages.");
             PdfPageEvent pageEvent = writer.getPageEvent();
@@ -955,7 +962,6 @@ class PdfDocument extends Document implements DocListener {
      * @param ptable the <CODE>PdfPTable</CODE> to be added to the document.
      * @throws DocumentException on error
      */
-    /* ssteward: dropped in 1.44
     void addPTable(PdfPTable ptable) throws DocumentException {
         ColumnText ct = new ColumnText(writer.getDirectContent());
         if (currentHeight > 0) {
@@ -987,7 +993,6 @@ class PdfDocument extends Document implements DocListener {
         }
         ptable.setHeadersInEvent(he);
     }
-    */
     
 	/**
 	 * Gets a PdfTable object
@@ -997,11 +1002,10 @@ class PdfDocument extends Document implements DocListener {
 	 * @return returns a PdfTable object
 	 * @see PdfWriter#getPdfTable(Table)
 	 */
-    /* ssteward: dropped in 1.44
+
 	PdfTable getPdfTable(Table table, boolean supportRowAdditions) {
         return new PdfTable(table, indentLeft(), indentRight(), indentTop() - currentHeight, supportRowAdditions);
 	}
-    */
 
 	/**
 	 * @see PdfWriter#breakTableIfDoesntFit(PdfTable)
@@ -1010,7 +1014,7 @@ class PdfDocument extends Document implements DocListener {
 	 * @return true if the table will be broken
 	 * @throws DocumentException
 	 */
-    /* ssteward: dropped in 1.44
+	
 	boolean breakTableIfDoesntFit(PdfTable table) throws DocumentException {
 		table.updateRowAdditions();
 		// Do we have any full page available?
@@ -1021,7 +1025,6 @@ class PdfDocument extends Document implements DocListener {
 		}
 		return false;
 	}
-    */
     
 	/**
 	 * Adds a new table to 
@@ -1029,7 +1032,7 @@ class PdfDocument extends Document implements DocListener {
 	 * @param onlyFirstPage		Render only the first full page
 	 * @throws DocumentException
 	 */
-    /* ssteward: dropped in 1.44	
+	
     private void add(PdfTable table, boolean onlyFirstPage) throws DocumentException {
         // before every table, we flush all lines
         flushLines();
@@ -1296,7 +1299,6 @@ class PdfDocument extends Document implements DocListener {
         text.moveText(0, -tableHeight );
         pageEmpty = false;
     }
-    */
 
     /**
      * Signals that an <CODE>Element</CODE> was added to the <CODE>Document</CODE>.
@@ -1305,6 +1307,7 @@ class PdfDocument extends Document implements DocListener {
      * @return <CODE>true</CODE> if the element was added, <CODE>false</CODE> if not.
      * @throws DocumentException when a document isn't open yet, or has been closed
      */
+    
     public boolean add(Element element) throws DocumentException {
         if (writer != null && writer.isPaused()) {
             return false;
@@ -1341,6 +1344,7 @@ class PdfDocument extends Document implements DocListener {
                     info.addCreationDate();
                     break;
                     
+                    // content (text)
                 case Element.CHUNK: {
                     // if there isn't a current line available, we make one
                     if (line == null) {
@@ -1402,7 +1406,7 @@ class PdfDocument extends Document implements DocListener {
                         leading = spacingBefore;
                         carriageReturn();
                         if (!pageEmpty) {
-			    /*
+                            /*
                              * Don't add spacing before a paragraph if it's the first
                              * on the page
                              */
@@ -1443,7 +1447,6 @@ class PdfDocument extends Document implements DocListener {
                     if (pageEvent != null && isParagraph)
                         pageEvent.onParagraph(writer, this, indentTop() - currentHeight);
                     
-		    /* ssteward: dropped in 1.44
                     // if a paragraph has to be kept together, we wrap it in a table object
                     if (paragraph.getKeepTogether()) {
                         Table table = new Table(1, 1);
@@ -1461,7 +1464,6 @@ class PdfDocument extends Document implements DocListener {
                         break;
                     }
                     else
-		    */
                         // we process the paragraph
                         element.process(this);
                     
@@ -1478,7 +1480,7 @@ class PdfDocument extends Document implements DocListener {
                         leading = spacingAfter;
                         carriageReturn();
                         if (currentHeight + line.height() + leading < indentTop() - indentBottom()) {
-			    /*
+                            /*
                              * Only add spacing after a paragraph if the extra
                              * spacing fits on the page.
                              */
@@ -1506,7 +1508,6 @@ class PdfDocument extends Document implements DocListener {
                     
                     break;
                 }
-		    /* ssteward: dropped in 1.44
                 case Element.SECTION:
                 case Element.CHAPTER: {
                     // Chapters and Sections only differ in their constructor
@@ -1570,7 +1571,6 @@ class PdfDocument extends Document implements DocListener {
                     
                     break;
                 }
-*/
                 case Element.LIST: {
                     // we cast the element to a List
                     List list = (List) element;
@@ -1593,7 +1593,7 @@ class PdfDocument extends Document implements DocListener {
                         leading = spacingBefore;
                         carriageReturn();
                         if (!pageEmpty) {
-			    /*
+                            /*
                              * Don't add spacing before a paragraph if it's the first
                              * on the page
                              */
@@ -1619,7 +1619,7 @@ class PdfDocument extends Document implements DocListener {
                         leading = spacingAfter;
                         carriageReturn();
                         if (currentHeight + line.height() + leading < indentTop() - indentBottom()) {
-			    /*
+                            /*
                              * Only add spacing after a paragraph if the extra
                              * spacing fits on the page.
                              */
@@ -1646,7 +1646,6 @@ class PdfDocument extends Document implements DocListener {
                     pageEmpty = false;
                     break;
                 }
-		    /* ssteward: dropped in 1.44
                 case Element.PTABLE: {
                     PdfPTable ptable = (PdfPTable)element;
                     if (ptable.size() <= ptable.getHeaderRows())
@@ -1671,7 +1670,7 @@ class PdfDocument extends Document implements DocListener {
                 }
                 case Element.TABLE : {
                     
-		    *//*
+                    /**
                      * This is a list of people who worked on the Table functionality.
                      * To see who did what, please check the CVS repository:
                      *
@@ -1686,7 +1685,7 @@ class PdfDocument extends Document implements DocListener {
                      * Paulo Soares
                      * Gerald Fehringer
                      * Steve Appling
-                     *//*
+                     */
 	                    
 					PdfTable table;
                     if (element instanceof PdfTable) {
@@ -1749,7 +1748,6 @@ class PdfDocument extends Document implements DocListener {
                     pageEmpty = false;
                     break;
                 }
-    */
                 default:
                     return false;
             }
@@ -1769,7 +1767,7 @@ class PdfDocument extends Document implements DocListener {
      * @throws PdfException on error
      * @throws DocumentException on error
      */
-    /* ssteward: dropped in 1.44
+    
     private void add(Image image) throws PdfException, DocumentException {
         
         if (image.hasAbsolutePosition()) {
@@ -1828,7 +1826,6 @@ class PdfDocument extends Document implements DocListener {
             newLine();
         }
     }
-    */
     
     /**
      * Initializes a page.
@@ -1889,16 +1886,16 @@ class PdfDocument extends Document implements DocListener {
         }
         
         // if there is a watermark, the watermark is added
-	/*
         if (watermark != null) {
             float mt[] = watermark.matrix();
             graphics.addImage(watermark, mt[0], mt[1], mt[2], mt[3], watermark.offsetX() - mt[4], watermark.offsetY() - mt[5]);
         }
-	*/
         
         // if there is a footer, the footer is added
-	/* ssteward: dropped in 1.44
         if (footer != null) {
+			/*
+				Added by Edgar Leonardo Prieto Perilla
+			*/
 			// Avoid footer identation
 			float tmpIndentLeft = indentLeft;
 			float tmpIndentRight = indentRight;
@@ -1914,6 +1911,9 @@ class PdfDocument extends Document implements DocListener {
                         imageIndentLeft = 0;
                         imageIndentRight = 0;
                         // End added: Bonf (Marc Schneider) 2003-07-29
+			/*
+				End Added by Edgar Leonardo Prieto Perilla
+			*/
 
 			footer.setPageNumber(pageN);
             leading = footer.paragraph().leading();
@@ -1931,6 +1931,9 @@ class PdfDocument extends Document implements DocListener {
             indentBottom = currentHeight + leading * 2;
             currentHeight = 0;
 
+			/*
+				Added by Edgar Leonardo Prieto Perilla
+			*/
 			indentLeft = tmpIndentLeft;
 			indentRight = tmpIndentRight;
                         // Begin added: Bonf (Marc Schneider) 2003-07-29
@@ -1938,15 +1941,19 @@ class PdfDocument extends Document implements DocListener {
                         imageIndentLeft = tmpImageIndentLeft;
                         imageIndentRight = tmpImageIndentRight;
                         // End added: Bonf (Marc Schneider) 2003-07-29
+			/*
+				End Added by Edgar Leonardo Prieto Perilla
+			*/
         }
-	*/
         
         // we move to the left/top position of the page
         text.moveText(left(), top());
         
-	/* ssteward: dropped in 1.44
         // if there is a header, the header = added
         if (header != null) {
+			/*
+				Added by Edgar Leonardo Prieto Perilla
+			*/
 			// Avoid header identation
 			float tmpIndentLeft = indentLeft;
 			float tmpIndentRight = indentRight;
@@ -1962,6 +1969,9 @@ class PdfDocument extends Document implements DocListener {
                         imageIndentLeft = 0;
                         imageIndentRight = 0;
                         // End added: Bonf
+			/*
+				End Added by Edgar Leonardo Prieto Perilla
+			*/
 			
 			header.setPageNumber(pageN);
             leading = header.paragraph().leading();
@@ -1977,6 +1987,9 @@ class PdfDocument extends Document implements DocListener {
             flushLines();
             currentHeight = 0;
 
+			/*
+				Added by Edgar Leonardo Prieto Perilla
+			*/
 			// Restore identation
 			indentLeft = tmpIndentLeft;
 			indentRight = tmpIndentRight;
@@ -1985,13 +1998,14 @@ class PdfDocument extends Document implements DocListener {
                         imageIndentLeft = tmpImageIndentLeft;
                         imageIndentRight = tmpImageIndentRight;
                         // End added: Bonf (Marc Schneider) 2003-07-29
+			/*
+				End Added by Edgar Leonardo Prieto Perilla
+			*/
         }
-	*/
         
         pageEmpty = true;
         
         // if there is an image waiting to be drawn, draw it
-	/* ssteward: dropped in 1.44
         try {
             if (imageWait != null) {
                 add(imageWait);
@@ -2001,7 +2015,6 @@ class PdfDocument extends Document implements DocListener {
         catch(Exception e) {
             throw new ExceptionConverter(e);
         }
-	*/
         
         leading = oldleading;
         alignment = oldAlignment;
@@ -2021,6 +2034,7 @@ class PdfDocument extends Document implements DocListener {
      * of lines and a new empty line is added.
      * @throws DocumentException on error
      */
+    
     private void carriageReturn() throws DocumentException {
         // the arraylist with lines may not be null
         if (lines == null) {
@@ -2055,6 +2069,7 @@ class PdfDocument extends Document implements DocListener {
      * Adds the current line to the list of lines and also adds an empty line.
      * @throws DocumentException on error
      */
+    
     private void newLine() throws DocumentException {
         lastElementType = -1;
         carriageReturn();
@@ -2071,6 +2086,7 @@ class PdfDocument extends Document implements DocListener {
      * @return the displacement that was caused
      * @throws DocumentException on error
      */
+    
     private float flushLines() throws DocumentException {
         
         // checks if the ArrayList with the lines is not null
@@ -2134,7 +2150,6 @@ class PdfDocument extends Document implements DocListener {
                     text.showText(chunk.toString());
                     text.resetRGBColorFill();
                 }
-		/* ssteward: dropped in 1.44
                 else if (chunk.isImage()) {
                     Image image = chunk.getImage();
                     float matrix[] = image.matrix();
@@ -2144,7 +2159,6 @@ class PdfDocument extends Document implements DocListener {
                     matrix[Image.CY] = yMarker + chunk.getImageOffsetY() - matrix[Image.CY];
                     graphics.addImage(image, matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
                 }
-		*/
                 else {
                     text.showText(chunk.toString());
                 }
@@ -2227,7 +2241,7 @@ class PdfDocument extends Document implements DocListener {
      * @param	table	the table that may or may not be added to this document
      * @return	a bottom value
      */
-    /* ssteward: dropped in 1.44
+    
     float bottom(Table table) {
         // where will the table begin?
         float h = (currentHeight > 0) ? indentTop() - currentHeight - 2f * leading : indentTop();
@@ -2235,7 +2249,6 @@ class PdfDocument extends Document implements DocListener {
         PdfTable tmp = getPdfTable(table, false);
         return tmp.bottom();
     }
-    */
     
     /**
      * Checks if a <CODE>PdfPTable</CODE> fits the current page of the <CODE>PdfDocument</CODE>.
@@ -2244,7 +2257,7 @@ class PdfDocument extends Document implements DocListener {
      * @param	margin	a certain margin
      * @return	<CODE>true</CODE> if the <CODE>PdfPTable</CODE> fits the page, <CODE>false</CODE> otherwise.
      */
-    /* ssteward: dropped in 1.44
+    
     boolean fitsPage(PdfPTable table, float margin) {
             if (!table.isLockedWidth()) {
                 float totalWidth = (indentRight() - indentLeft()) * table.getWidthPercentage() / 100;
@@ -2254,7 +2267,6 @@ class PdfDocument extends Document implements DocListener {
         ensureNewLine();
             return table.getTotalHeight() <= indentTop() - currentHeight - indentBottom() - margin;
         }
-    */
     
     
     /**
@@ -2459,6 +2471,7 @@ class PdfDocument extends Document implements DocListener {
                             subtract += hangingCorrection;
                         Object unders[][] = (Object[][])chunk.getAttribute(Chunk.UNDERLINE);
                         Color scolor = null;
+                        int cap = 0;
                         for (int k = 0; k < unders.length; ++k) {
                             Object obj[] = unders[k];
                             scolor = (Color)obj[0];
@@ -2547,7 +2560,7 @@ class PdfDocument extends Document implements DocListener {
                     float params[] = (float[])chunk.getAttribute(Chunk.SKEW);
                     Float hs = (Float)chunk.getAttribute(Chunk.HSCALE);
                     if (params != null || hs != null) {
-                        float b = 0, c = 0;
+                        float a = 1, b = 0, c = 0;
                         if (params != null) {
                             b = params[0];
                             c = params[1];
@@ -2556,7 +2569,6 @@ class PdfDocument extends Document implements DocListener {
                             hScale = hs.floatValue();
                         text.setTextMatrix(hScale, b, c, 1, xMarker, yMarker);
                     }
-		    /* ssteward: dropped in 1.44 
                     if (chunk.isImage()) {
                         Image image = chunk.getImage();
                         float matrix[] = image.matrix();
@@ -2565,7 +2577,6 @@ class PdfDocument extends Document implements DocListener {
                         graphics.addImage(image, matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
                         text.moveText(xMarker + lastBaseFactor + image.scaledWidth() - text.getXTLM(), 0);
                     }
-		    */
                 }
                 xMarker += width;
                 ++chunkStrokeIdx;
@@ -2602,11 +2613,9 @@ class PdfDocument extends Document implements DocListener {
                 text.setColorFill(color);
             if (rise != 0)
                 text.setTextRise(rise);
-	    /* ssteward: dropped in 1.44 
             if (chunk.isImage()) {
                 adjustMatrix = true;
             }
-	    */
             // If it is a CJK chunk or Unicode TTF we will have to simulate the
             // space adjustment.
             else if (isJustified && numberOfSpaces > 0 && chunk.isSpecialEncoding()) {
@@ -2894,7 +2903,6 @@ class PdfDocument extends Document implements DocListener {
 	 * Method added by Pelikan Stephan
 	 * @see com.lowagie.text.DocListener#clearTextWrap()
 	 */
-    /* ssteward: dropped in 1.44
 	public void clearTextWrap() throws DocumentException {
 		super.clearTextWrap();
 		float tmpHeight = imageEnd - currentHeight;
@@ -2902,11 +2910,10 @@ class PdfDocument extends Document implements DocListener {
 			tmpHeight += line.height();
 		}
 		if ((imageEnd > -1) && (tmpHeight > 0)) {
-		    carriageReturn();
-		    currentHeight += tmpHeight;
+			carriageReturn();
+			currentHeight += tmpHeight;
 		}
 	}
-    */
     
     ArrayList getDocumentJavaScript() {
         return documentJavaScript;
@@ -2921,11 +2928,11 @@ class PdfDocument extends Document implements DocListener {
         }
         return super.setMarginMirroring(MarginMirroring);
     }
-    /* ssteward: dropped in 1.44
+    
     void setThumbnail(Image image) throws PdfException, DocumentException {
         thumb = writer.getImageReference(writer.addDirectImageSimple(image));
     }
-    */
+    
     static PdfAnnotation convertAnnotation(PdfWriter writer, Annotation annot) throws IOException {
          switch(annot.annotationType()) {
             case Annotation.URL_NET:
