@@ -1,0 +1,40 @@
+= PdftkExt
+
+See http://www.pdflabs.com/tools/pdftk-the-pdf-toolkit for details on the basic functionality provided by pdftk.
+
+This fork is meant to enhance the basic PDFTk functionality in 2 areas:
+
+* Custom stamping over form fields
+* Chaining various operation commands in a single process call
+
+---
+=== Custom stamping
+
+Custom stamping to PDFs can be performed using the +stamp_detailed+ operation like so:
+
+  pdftk source.pdf stamp_detailed stamp_data.xfdf output result.pdf
+
+In the example above:
+
+[source.pdf]  the file to which we are adding the image stamp(s)
+[stamp_data.xfdf]  the xfdf formatted file containing the stamp(s) information.
+                   Similar to the +fill_form+ operation, this file should contain form-field _name-value_ 
+                   pairs using base64-encoded image data for the _value_ of the fields being stamped.
+
+                   See the {XFDF spec}[http://partners.adobe.com/public/developer/en/xml/XFDF_Spec_3.0.pdf]
+                   for specific information.
+[result.pdf]  the output file made up of +source.pdf+ merged with the stamp data contained in +stamp_data.xfdf+
+
+---
+=== Chaining operations
+
+Operations can be chained together in one pass.  So rather than calling:
+
+  pdftk source.pdf fill_form form_data.xfdf output - | pdftk - stamp_detailed stamp_data.xfdf output result.pdf
+
+You can call the following:
+
+  pdftk source.pdf fill_form form_data.xfdf stamp_detailed stamp_data.xfdf output result.pdf
+
+Besides avoiding repetition, only one pdftk process needs to be instantiated. This can significantly reduce overhead
+where many operations are required, or where only a couple of operations are being used on very large files.
